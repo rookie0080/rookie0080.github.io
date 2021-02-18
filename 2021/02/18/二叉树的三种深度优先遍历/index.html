@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     
     <title>
-        在二叉搜索树中查找后继及删除结点 |
+        二叉树的三种深度优先遍历 |
         
         Ray Lyu
     </title>
@@ -127,7 +127,7 @@
     <div class="article-content-container">
 
         <div class="article-title">
-            <span class="title-hover-animation">在二叉搜索树中查找后继及删除结点</span>
+            <span class="title-hover-animation">二叉树的三种深度优先遍历</span>
         </div>
 
         
@@ -143,7 +143,7 @@
                     <div class="meta-info">
                         <div class="article-meta-info">
     <span class="article-date article-meta-item">
-        <i class="fas fa-calendar"></i> 2021-02-07 12:30:03
+        <i class="fas fa-calendar"></i> 2021-02-18 12:47:00
     </span>
     
         <span class="article-categories article-meta-item">
@@ -163,7 +163,7 @@
             <ul>
                 
                     <li>
-                        <a href="/tags/%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91/">二叉搜索树</a>
+                        <a href="/tags/%E4%BA%8C%E5%8F%89%E6%A0%91/">二叉树</a>
                     </li>
                 
             </ul>
@@ -186,24 +186,30 @@
         
 
         <div class="article-content markdown-body">
-            <p>二叉搜索树（后称BST）的性质比较简单，本文关注各结点关键字互不相同的BST中后继结点的查找以及结点的删除操作。</p>
-<h3 id="查找后继"><a href="#查找后继" class="headerlink" title="查找后继"></a>查找后继</h3><p>一个结点x的后继是大于x.key的最小关键字的结点，即在BST中序遍历中x的后一个结点，类似地，可以定义x的前驱。对于一个结点x，如果存在它的后继y，分两种情况：若x存在右子树，则y为其右子树的最左结点；否则，若x的右子树为空，则y为x的最底层祖先，且该祖先的左孩子也是x的祖先。上述结论直接给出了后继的查找算法，算法的实现比较简单（leetcode No.1882）。此处给出对上述结论的证明。</p>
-<p>我们先说明当x的右子树为空时的情形。首先，y一定是x的祖先。否则，一定存在y和x的公共祖先z，使得x &lt; z &lt; y，即y与x之间还有其它的结点，这与y是x的后继相矛盾。其次，x一定在y的左子树上，即y的左孩子也是x的祖先（祖先可以是结点本身）。最后，若有z而非y为满足上述条件的最底层祖先，则y是z的祖先，且z位于y的左子树上，导致x &lt; z &lt; y，矛盾。接着，我们来说明当x的右子树非空时的情形。若后继不在x的右子树上，则采用与前述在x的右子树为空这一情形下相同的分析可以得到相同的后继y。但显然，x的右子树上的任意结点z都满足x &lt; z &lt; y，这与y为x的后继相矛盾。因此，y必定在x的右子树上，从而y为x的右子树的最左结点。</p>
-<p>具体的代码实现如下：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">TreeNode* <span class="title">inorderSuccessor</span><span class="params">(TreeNode* root, TreeNode* p)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!root || !p) <span class="keyword">return</span> <span class="literal">nullptr</span>;</span><br><span class="line"></span><br><span class="line">    TreeNode *successor = <span class="literal">nullptr</span>;</span><br><span class="line">    <span class="keyword">if</span> (p-&gt;right) &#123;</span><br><span class="line">        successor = p-&gt;right;</span><br><span class="line">        <span class="keyword">while</span> (successor-&gt;left)</span><br><span class="line">            successor = successor-&gt;left;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        TreeNode *cur = root;</span><br><span class="line">        <span class="keyword">while</span> (cur != p) &#123;</span><br><span class="line">            <span class="keyword">if</span> (p-&gt;val &lt; cur-&gt;val) &#123;</span><br><span class="line">                successor = cur;</span><br><span class="line">                cur = cur-&gt;left;</span><br><span class="line">            &#125; <span class="keyword">else</span></span><br><span class="line">                cur = cur-&gt;right; </span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> successor;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="删除节点"><a href="#删除节点" class="headerlink" title="删除节点"></a>删除节点</h3><p>设要删除的结点为z，则在BST中删除结点可以简要地分为以下几种情况。若z没有子结点，则直接删除z。若z只有一个子结点，则将以该子结点为根的子树提到z的位置上。若z有两个子结点，则可以将z的后继结点移到z的位置上。当然，在具体情形下还需要考虑一些小问题，比如z的父节点存在时要修改z的父节点，将z的后继移到z的位置时要分后继是否为z的子结点。以leetcode No.450为例，该题给出一棵树以及要删除的结点。下面的代码采用递归，比较优雅地实现了结点的删除，在代码注释中给出了对细节的处理。</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">TreeNode* <span class="title">deleteNode</span><span class="params">(TreeNode *root, <span class="keyword">int</span> key)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!root) <span class="keyword">return</span> <span class="literal">nullptr</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (key &lt; root-&gt;val) &#123; root-&gt;left = deleteNode(root-&gt;left, key); <span class="keyword">return</span> root; &#125;</span><br><span class="line">    <span class="keyword">if</span> (key &gt; root-&gt;val) &#123; root-&gt;right = deleteNode(root-&gt;right, key); <span class="keyword">return</span> root; &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/* 根结点为要删除的结点*/</span></span><br><span class="line">    <span class="keyword">if</span> (!root-&gt;left || !root-&gt;right) &#123;      <span class="comment">// 包含了除存在两个子结点之外的其它情况</span></span><br><span class="line">        TreeNode * tmp = !root-&gt;left ? root-&gt;right : root-&gt;left;</span><br><span class="line">        <span class="keyword">delete</span>(root);</span><br><span class="line">        <span class="keyword">return</span> tmp;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        TreeNode *successor = root-&gt;right;</span><br><span class="line">        <span class="keyword">if</span> (!successor-&gt;left) &#123;             <span class="comment">// 若后继为root的子结点</span></span><br><span class="line">            successor-&gt;left = root-&gt;left;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            TreeNode sentinel(<span class="number">0</span>, successor, <span class="literal">nullptr</span>), *pa = &amp;sentinel;</span><br><span class="line">            <span class="keyword">while</span> (successor-&gt;left) &#123;</span><br><span class="line">                successor = successor-&gt;left;</span><br><span class="line">                pa = pa-&gt;left;</span><br><span class="line">            &#125;</span><br><span class="line">            pa-&gt;left = successor-&gt;right;    <span class="comment">// <span class="doctag">NOTE:</span> 若后继有右孩子，需要把右子树提到了后继的位置上</span></span><br><span class="line">            successor-&gt;left = root-&gt;left;</span><br><span class="line">            successor-&gt;right = root-&gt;right;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">delete</span>(root);</span><br><span class="line">        <span class="keyword">return</span> successor;        </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+            <p>本文主要对二叉树深度优先算法的实现进行梳理，并给出相应的代码。深度优先各种遍历顺序的递归实现都很简单，此处只关注非递归实现。这其中最为关键的是中序遍历和后序遍历。宽度优先写过很多次了，比较简单。</p>
+<h3 id="1-前序遍历"><a href="#1-前序遍历" class="headerlink" title="1 前序遍历"></a>1 前序遍历</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">preorderTraversal</span><span class="params">(TreeNode *root, <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;res)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!root) <span class="keyword">return</span>;</span><br><span class="line">    <span class="built_in">stack</span>&lt;TreeNode*&gt; stk;</span><br><span class="line">    stk.push(root);</span><br><span class="line">    <span class="keyword">while</span> (!stk.empty()) &#123;</span><br><span class="line">        TreeNode *cur = stk.top();</span><br><span class="line">        stk.pop();</span><br><span class="line">        res.push_back(cur-&gt;val);</span><br><span class="line">        <span class="keyword">if</span> (cur-&gt;right) stk.push(cur-&gt;right);   <span class="comment">// NOTE：先入右边，再入左边 </span></span><br><span class="line">        <span class="keyword">if</span> (cur-&gt;left) stk.push(cur-&gt;left);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-后序遍历"><a href="#2-后序遍历" class="headerlink" title="2 后序遍历"></a>2 后序遍历</h3><p>后序遍历稍微麻烦一些，我出于兴趣，在此总结了三种实现方式。</p>
+<p>第一种直接利用先序遍历（不同于上面的先序）的结果。后序遍历的顺序为左、右、中，可按中、右、左的顺序遍历二叉树（这仅为另一种先序遍历而已），然后将遍历结果的序列反转。这种方式并不像很多人说的那样不堪，下面将要列举的另外两种实现方式，只是将这里用于反转vector的时间分摊在了循环的迭代过程中而已。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">postorderTraversal</span><span class="params">(TreeNode *root, <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;res)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!root) <span class="keyword">return</span>;</span><br><span class="line">    <span class="built_in">stack</span>&lt;TreeNode*&gt; stk;</span><br><span class="line">    stk.push(root);</span><br><span class="line">    <span class="keyword">while</span> (!stk.empty()) &#123;</span><br><span class="line">        TreeNode *cur = stk.top();</span><br><span class="line">        stk.pop();</span><br><span class="line">        res.push_back(cur-&gt;val);</span><br><span class="line">        <span class="keyword">if</span> (cur-&gt;left) stk.push(cur-&gt;left);</span><br><span class="line">        <span class="keyword">if</span> (cur-&gt;right) stk.push(cur-&gt;right);   <span class="comment">// 仅修改这里的顺序为先入左，再入右 </span></span><br><span class="line">    &#125;</span><br><span class="line">    reverse(res.begin(), res.end());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接下来的两种实现方式同样按中、右、左的顺序对节点执行入栈操作。每次迭代时，先判断栈顶结点是否有子结点，如果没有，直接弹栈。如果有子结点，则判断子结点是否被访问过，如果子结点也被访问过了，亦弹栈。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">postorderTraversal</span><span class="params">(TreeNode *root, <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;res)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!root) <span class="keyword">return</span>;</span><br><span class="line">    <span class="built_in">stack</span>&lt;TreeNode*&gt; stk;</span><br><span class="line">    stk.push(root);</span><br><span class="line">    TreeNode *visited = <span class="literal">nullptr</span>;</span><br><span class="line">    <span class="keyword">while</span> (!stk.empty()) &#123;</span><br><span class="line">        TreeNode *cur = stk.top();</span><br><span class="line">        <span class="keyword">if</span> ((!cur-&gt;left &amp;&amp; !cur-&gt;right) || (visited &amp;&amp; (visited == cur-&gt;left || visited == cur-&gt;right))) &#123;</span><br><span class="line">            stk.pop();</span><br><span class="line">            res.push_back(cur-&gt;val);</span><br><span class="line">            visited = cur;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (cur-&gt;right) stk.push(cur-&gt;right);</span><br><span class="line">            <span class="keyword">if</span> (cur-&gt;left) stk.push(cur-&gt;left);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最后一种实现方式是从leetcode上一位朋友的<a class="link"   target="_blank" rel="noopener" href="https://leetcode-cn.com/problems/binary-tree-postorder-traversal/solution/a-li-mian-shi-ti-zhi-yong-zhan-qu-zuo-er-cha-shu-d/" >题解<i class="fas fa-external-link-alt"></i></a>中看到的，该方式运用了一个小技巧。在每次迭代时，如果是第一次遍历到某个结点，就马上压入一个空元素。这使得在第二次遍历该结点前，必定会先遍历到一个空元素，即该空元素成为了第二次遍历的信号。于是，当栈顶元素为空元素时，可一次性弹出两个元素。这种方式使得代码的逻辑变得简单了许多。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">postorderTraversal</span><span class="params">(TreeNode *root, <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;res)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!root) <span class="keyword">return</span>;</span><br><span class="line">    <span class="built_in">stack</span>&lt;TreeNode*&gt; stk;</span><br><span class="line">    stk.push(root);</span><br><span class="line">    TreeNode *visited = <span class="literal">nullptr</span>;</span><br><span class="line">    <span class="keyword">while</span> (!stk.empty()) &#123;</span><br><span class="line">        TreeNode *cur = stk.top();</span><br><span class="line">        <span class="keyword">if</span> (!cur) &#123;</span><br><span class="line">            stk.pop();</span><br><span class="line">            visited = stk.top();</span><br><span class="line">            res.push_back(visited-&gt;val);</span><br><span class="line">            stk.pop();</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            stk.push(<span class="literal">nullptr</span>);</span><br><span class="line">            <span class="keyword">if</span> (cur-&gt;right) stk.push(cur-&gt;right);</span><br><span class="line">            <span class="keyword">if</span> (cur-&gt;left) stk.push(cur-&gt;left);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="3-中序遍历"><a href="#3-中序遍历" class="headerlink" title="3 中序遍历"></a>3 中序遍历</h3><p>中序遍历较之后序遍历要难一些，因为思路并不是很直观，但代码很简洁，值得背下来。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">postorderTraversal</span><span class="params">(TreeNode *root, <span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; &amp;res)</span> </span>&#123;</span><br><span class="line">    <span class="built_in">stack</span>&lt;TreeNode*&gt; stk;</span><br><span class="line">    <span class="keyword">while</span> (root || !stk.empty()) &#123;</span><br><span class="line">        <span class="keyword">while</span> (root) &#123;</span><br><span class="line">            stk.push(root);</span><br><span class="line">            root = root-&gt;left;</span><br><span class="line">        &#125;</span><br><span class="line">        TreeNode *cur = stk.top();</span><br><span class="line">        stk.pop();</span><br><span class="line">        res.push_back(cur-&gt;val);</span><br><span class="line">        root = cur-&gt;right;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
         </div>
 
         
             <div class="post-copyright-info">
                 <div class="article-copyright-info-container">
     <ul>
-        <li>Post title：在二叉搜索树中查找后继及删除结点</li>
+        <li>Post title：二叉树的三种深度优先遍历</li>
         <li>Post author：Ray Lyu</li>
-        <li>Create time：2021-02-07 12:30:03</li>
+        <li>Create time：2021-02-18 12:47:00</li>
         <li>
-            Post link：https://rookie0080.github.io/2021/02/07/在二叉搜索树中查找后继及删除结点/
+            Post link：https://rookie0080.github.io/2021/02/18/二叉树的三种深度优先遍历/
         </li>
         <li>
             Copyright Notice：All articles in this blog are licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">BY-NC-SA</a> unless stating additionally.
@@ -217,21 +223,21 @@
         
             <div class="article-nav">
                 
-                    <div class="article-prev">
-                        <a class="prev"
-                           rel="prev"
-                           href="/2021/02/18/%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E4%B8%89%E7%A7%8D%E6%B7%B1%E5%BA%A6%E4%BC%98%E5%85%88%E9%81%8D%E5%8E%86/"
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2021/02/07/%E5%9C%A8%E4%BA%8C%E5%8F%89%E6%90%9C%E7%B4%A2%E6%A0%91%E4%B8%AD%E6%9F%A5%E6%89%BE%E5%90%8E%E7%BB%A7%E5%8F%8A%E5%88%A0%E9%99%A4%E7%BB%93%E7%82%B9/"
                         >
-                            <span class="left arrow-icon flex-center" >
-                              <i class="fas fa-chevron-left"></i>
-                            </span>
                             <span class="title flex-center">
-                                <span class="post-nav-title-item">二叉树的三种深度优先遍历</span>
-                                <span class="post-nav-item">Prev posts</span>
+                                <span class="post-nav-title-item">在二叉搜索树中查找后继及删除结点</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex-center" >
+                              <i class="fas fa-chevron-right"></i>
                             </span>
                         </a>
                     </div>
-                
                 
             </div>
         
@@ -406,7 +412,7 @@
         
             <div class="post-toc-wrap">
     <div class="post-toc">
-        <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E6%89%BE%E5%90%8E%E7%BB%A7"><span class="nav-number">1.</span> <span class="nav-text">查找后继</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%A0%E9%99%A4%E8%8A%82%E7%82%B9"><span class="nav-number">2.</span> <span class="nav-text">删除节点</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%89%8D%E5%BA%8F%E9%81%8D%E5%8E%86"><span class="nav-number">1.</span> <span class="nav-text">1 前序遍历</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%90%8E%E5%BA%8F%E9%81%8D%E5%8E%86"><span class="nav-number">2.</span> <span class="nav-text">2 后序遍历</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E4%B8%AD%E5%BA%8F%E9%81%8D%E5%8E%86"><span class="nav-number">3.</span> <span class="nav-text">3 中序遍历</span></a></li></ol>
     </div>
 </div>
         
