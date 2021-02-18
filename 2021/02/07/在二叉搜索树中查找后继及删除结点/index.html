@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     
     <title>
-        在二叉搜索树中查找后继及删除节点 |
+        在二叉搜索树中查找后继及删除结点 |
         
-        Ray&#39;s Blog
+        Ray Lyu
     </title>
     <link rel="shortcut icon" href="/images/avatar.png">
     
@@ -41,7 +41,7 @@
 
     <div class="header-content">
         <a class="logo-title" href="/">
-            Ray&#39;s Blog
+            Ray Lyu
         </a>
 
         <ul class="menu-list">
@@ -127,7 +127,7 @@
     <div class="article-content-container">
 
         <div class="article-title">
-            <span class="title-hover-animation">在二叉搜索树中查找后继及删除节点</span>
+            <span class="title-hover-animation">在二叉搜索树中查找后继及删除结点</span>
         </div>
 
         
@@ -186,18 +186,24 @@
         
 
         <div class="article-content markdown-body">
-            
+            <p>二叉搜索树（后称BST）的性质比较简单，本文关注各结点关键字互不相同的BST中后继结点的查找以及结点的删除操作。</p>
+<h3 id="查找后继"><a href="#查找后继" class="headerlink" title="查找后继"></a>查找后继</h3><p>一个结点x的后继是大于x.key的最小关键字的结点，即在BST中序遍历中x的后一个结点，类似地，可以定义x的前驱。对于一个结点x，如果存在它的后继y，分两种情况：若x存在右子树，则y为其右子树的最左结点；否则，若x的右子树为空，则y为x的最底层祖先，且该祖先的左孩子也是x的祖先。上述结论直接给出了后继的查找算法，算法的实现比较简单（leetcode No.1882）。此处给出对上述结论的证明。</p>
+<p>我们先说明当x的右子树为空时的情形。首先，y一定是x的祖先。否则，一定存在y和x的公共祖先z，使得x &lt; z &lt; y，即y与x之间还有其它的结点，这与y是x的后继相矛盾。其次，x一定在y的左子树上，即y的左孩子也是x的祖先（祖先可以是结点本身）。最后，若有z而非y为满足上述条件的最底层祖先，则y是z的祖先，且z位于y的左子树上，导致x &lt; z &lt; y，矛盾。接着，我们来说明当x的右子树非空时的情形。若后继不在x的右子树上，则采用与前述在x的右子树为空这一情形下相同的分析可以得到相同的后继y。但显然，x的右子树上的任意结点z都满足x &lt; z &lt; y，这与y为x的后继相矛盾。因此，y必定在x的右子树上，从而y为x的右子树的最左结点。</p>
+<p>具体的代码实现如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">TreeNode* <span class="title">inorderSuccessor</span><span class="params">(TreeNode* root, TreeNode* p)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!root || !p) <span class="keyword">return</span> <span class="literal">nullptr</span>;</span><br><span class="line"></span><br><span class="line">    TreeNode *successor = <span class="literal">nullptr</span>;</span><br><span class="line">    <span class="keyword">if</span> (p-&gt;right) &#123;</span><br><span class="line">        successor = p-&gt;right;</span><br><span class="line">        <span class="keyword">while</span> (successor-&gt;left)</span><br><span class="line">            successor = successor-&gt;left;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        TreeNode *cur = root;</span><br><span class="line">        <span class="keyword">while</span> (cur != p) &#123;</span><br><span class="line">            <span class="keyword">if</span> (p-&gt;val &lt; cur-&gt;val) &#123;</span><br><span class="line">                successor = cur;</span><br><span class="line">                cur = cur-&gt;left;</span><br><span class="line">            &#125; <span class="keyword">else</span></span><br><span class="line">                cur = cur-&gt;right; </span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> successor;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="删除节点"><a href="#删除节点" class="headerlink" title="删除节点"></a>删除节点</h3><p>在BST中删除节点</p>
+
         </div>
 
         
             <div class="post-copyright-info">
                 <div class="article-copyright-info-container">
     <ul>
-        <li>Post title：在二叉搜索树中查找后继及删除节点</li>
+        <li>Post title：在二叉搜索树中查找后继及删除结点</li>
         <li>Post author：Ray Lyu</li>
         <li>Create time：2021-02-07 12:30:03</li>
         <li>
-            Post link：https://rookie0080.github.io/2021/02/07/在二叉搜索树中查找后继及删除节点/
+            Post link：https://rookie0080.github.io/2021/02/07/在二叉搜索树中查找后继及删除结点/
         </li>
         <li>
             Copyright Notice：All articles in this blog are licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">BY-NC-SA</a> unless stating additionally.
@@ -208,26 +214,6 @@
             </div>
         
 
-        
-            <div class="article-nav">
-                
-                
-                    <div class="article-next">
-                        <a class="next"
-                           rel="next"
-                           href="/2021/01/01/hello-world/"
-                        >
-                            <span class="title flex-center">
-                                <span class="post-nav-title-item">Hello World</span>
-                                <span class="post-nav-item">Next posts</span>
-                            </span>
-                            <span class="right arrow-icon flex-center" >
-                              <i class="fas fa-chevron-right"></i>
-                            </span>
-                        </a>
-                    </div>
-                
-            </div>
         
 
         
@@ -400,7 +386,7 @@
         
             <div class="post-toc-wrap">
     <div class="post-toc">
-        
+        <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E6%89%BE%E5%90%8E%E7%BB%A7"><span class="nav-number">1.</span> <span class="nav-text">查找后继</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%A0%E9%99%A4%E8%8A%82%E7%82%B9"><span class="nav-number">2.</span> <span class="nav-text">删除节点</span></a></li></ol>
     </div>
 </div>
         
