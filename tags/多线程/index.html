@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     
     <title>
-        About |
+        Tag: 多线程 |
         
         Ray Lyu
     </title>
@@ -71,7 +71,7 @@
                 </li>
             
                 <li class="menu-item">
-                    <a class="active"
+                    <a class=""
                        href="/about"
                     >
                         关于
@@ -104,7 +104,7 @@
                 </li>
             
                 <li class="drawer-menu-item flex-center">
-                    <a class="active"
+                    <a class=""
                        href="/about">关于</a>
                 </li>
             
@@ -123,157 +123,45 @@
                 <main class="main-content normal-code-theme">
 
                     
-                        $friend-link-item-height = 82px;
-$friend-link-item-height-tablet = 68px;
-$friend-link-item-interval = 16px;
-$friend-link-item-border-radius = 6px;
+                        <div class="fade-in-down-animation">
+    <div class="tag-container">
+        <div class="tag-name"><i class="fas fa-tag"></i> 多线程 (1)
+        </div>
+        <div class="tag--post-list">
+            
+<div class="archive-list-container">
+    
+        <section class="archive-item">
+            <div class="archive-item-header">
+                <span class="archive-year">2021</span>
+                <span class="archive-year-post-count">(1)</span>
+            </div>
+            <ul class="article-list">
+                
+                    <li class="article-item">
+                        <a class="article-title"
+                           href="/2021/02/21/%E7%94%9F%E4%BA%A7%E8%80%85-%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%9E%8B%E5%8F%8A%E5%AE%9E%E7%8E%B0/"
+                        >生产者-消费者模型及其实现</a>
+                        <span class="article-date">02-21</span>
+                    </li>
+                
+            </ul>
+        </section>
+    
+</div>
 
-.empty-page-container {
+        </div>
+    </div>
 
-  keep-container(1.005, 1.01, 30px, 30px);
+    <div class="tag-paginator">
+        <div class="paginator">
+    
 
-  .empty-page-content {
+    
+</div>
 
-    h1, h2, h3, h4, h5, h6 {
-
-      &:first-child {
-        margin-top: 0;
-      }
-
-    }
-  }
-
-
-  if (hexo-config('menu.Links')) {
-    .friends-link-container {
-
-      .friends-link-list {
-        position: relative;
-
-        .friends-link-item {
-          box-sizing: border-box;
-          position: relative;
-          float: left;
-          width: 50%;
-          cursor: pointer;
-          height: $friend-link-item-height;
-          padding-bottom: $friend-link-item-interval;
-
-          +keep-tablet() {
-            height: $friend-link-item-height-tablet;
-          }
-
-          &:nth-child(odd) {
-            padding-right: $friend-link-item-interval * 0.5;
-          }
-
-          &:nth-child(even) {
-            padding-left: $friend-link-item-interval * 0.5;
-          }
-
-          .content {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            box-shadow: 1px 1px 2px var(--shadow-color);
-            border-radius: $friend-link-item-border-radius;
-            padding-left: $friend-link-item-height - $friend-link-item-interval;
-            box-sizing: border-box;
-
-            +keep-tablet() {
-              padding-left: $friend-link-item-height-tablet - $friend-link-item-interval;
-            }
-
-            transition();
-
-            &:hover {
-              box-shadow: 1px 1px 6px var(--shadow-color);
-            }
-
-            .radius {
-              border-top-left-radius: $friend-link-item-border-radius;
-              border-bottom-left-radius: $friend-link-item-border-radius;
-            }
-
-            .avatar {
-              position: absolute;
-              top: 0;
-              left: 0;
-              width: $friend-link-item-height  - $friend-link-item-interval;
-              height: 100%;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              font-size: 2rem;
-              background: var(--second-background-color);
-              color: var(--second-text-color);
-
-              +keep-tablet() {
-                width: $friend-link-item-height-tablet  - $friend-link-item-interval;
-              }
-
-              img {
-                box-sizing: border-box;
-                position: relative;
-                width: 100%;
-                height: 100%;
-              }
-            }
-
-            .info {
-              position: relative;
-              width: 100%;
-              height: 100%;
-              box-sizing: border-box;
-              padding: 10px;
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              justify-items: flex-start;
-
-              +keep-tablet() {
-                padding: 6px;
-              }
-
-              .name {
-                width: 100%;
-                height: 60%;
-                font-size: 1.28rem;
-
-                +keep-tablet() {
-                  font-size: 1.08rem;
-                }
-              }
-
-              .description {
-                width: 100%;
-                height: 40%;
-                font-size: 1rem;
-                color: var(--third-text-color);
-
-                +keep-tablet() {
-                  font-size: 0.98rem;
-                }
-              }
-
-              .ellipsis {
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-              }
-
-            }
-          }
-
-        }
-
-      }
-
-    }
-
-  }
-
-}
+    </div>
+</div>
 
 
                     
