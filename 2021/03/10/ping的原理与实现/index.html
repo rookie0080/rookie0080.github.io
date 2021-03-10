@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <title>
+        ping的原理与实现 |
+        
+        Ray Lyu
+    </title>
+    <link rel="shortcut icon" href="/images/avatar.png">
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","path":"search.xml"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":true,"expand_all":true},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.png","favicon":"/images/avatar.png","img_position":"center","left_side_width":"260px","content_max_width":"900px","hover":{"shadow":true,"scale":false},"first_screen":{"enable":true,"background_img":"/images/bg.svg","description":"Think clearly and independently. Live confidently, courageously and hopefully."}},"local_search":{"enable":true,"trigger":"auto","unescape":false,"preload":true},"version":"3.0.4"};
+    KEEP.language = {"search":"Search...","prev":"Prev","next":"Next","prev_posts":"Prev posts","next_posts":"Next posts","page":"Page %d","recent_posts":"Recent Posts","share":"Share","powered_by":"Powered by %s","theme":"Theme","rss_feed":"RSS Feed","category":"Category","categories":"Categories","tag":"Tag","tags":"Tags","tagcloud":"Tag Cloud","comment":"Comment","home":"Home","archive":"Archive","archives":"Archives","about":"About","site_uv":"Visitor Count","site_pv":"Totalview","links":"Links","link":"Link","top":"TOP","read_more":"Read more","wordcount":"Words","min2read":"Mins","changelog":"Changelog","copyright":{"author":"Post author","title":"Post title","link":"Post link","create_time":"Create time","license_title":"Copyright Notice","license_content":"All articles in this blog are licensed under %s unless stating additionally."},"ago":{"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days age","week":"%s weeks age","month":"%s months age","year":"%s years age"}};
+  </script>
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+
+<body>
+<div class="page-container">
+
+    
+
+    <header class="page-header">
+        <div class="header-progress"></div>
+    </header>
+
+    <main class="page-main">
+
+        <div class="page-main-content">
+
+            <div class="page-main-content-top">
+                <header class="header-wrapper">
+
+    <div class="header-content">
+        <a class="logo-title" href="/">
+            Ray Lyu
+        </a>
+
+        <ul class="menu-list">
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/"
+                    >
+                        首页
+                    </a>
+                </li>
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/archives"
+                    >
+                        归档
+                    </a>
+                </li>
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/categories"
+                    >
+                        分类
+                    </a>
+                </li>
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/about"
+                    >
+                        关于
+                    </a>
+                </li>
+            
+        </ul>
+
+        <div class="menu-bar">
+            <div class="menu-bar-middle"></div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">归档</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">分类</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/about">关于</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+            </div>
+
+            <div class="page-main-content-middle">
+
+                <main class="main-content normal-code-theme">
+
+                    
+                        <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">ping的原理与实现</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/avatar.png">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span>Ray Lyu</span>
+                        <span class="level">Lv1</span>
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-calendar"></i> 2021-03-10 20:06:14
+    </span>
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>
+            <ul>
+                
+                    <li>
+                        <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/">计算机网络</a>
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>
+            <ul>
+                
+                    <li>
+                        <a href="/tags/ping/">ping</a>
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/ICMP%E5%8D%8F%E8%AE%AE/">ICMP协议</a>
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i> <span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <p>今天被腾讯面试官问到了ping的原理，以及怎么实现这个命令。我没仔细研究过，自然说不上来。回去翻了翻《自顶向下方法》，做了一下ping的wireshark实验，又研究了一下ping的实现这个小实验，记录于此。</p>
+<p>ping命令基于ICMP协议。ICMP协议是一个工作在网络层的协议，它对端口没有任何概念。而从体系结构上看，ICMP协议又是位于IP协议之上的，因为ICMP报文是作为IP数据报的有效载荷承载的。ICMP位于IP之上，但它两都工作在网络层，这不矛盾。</p>
+<p>ICMP报文的头部如下图所示，包括icmp报文的类型、编码、检验和、id以及序号。类型和编码一起描述了icmp报文的任务。ip数据包的首部一般是20个字节，所以ICMP头部的起始位置从160位开始，头部大小为8字节。ping分为客户和服务器程序，服务器程序几乎实现在所有常用的操作系统内核中，所以我们只需要实现ping的客户程序。客户发送一个类型为8，编码为0的回显请求（echo request）ping报文，服务器会返回一个类型为0，编码为0的回显回答（echo reply）pong报文。</p>
+<img src="./../image/icmp_header.png" >
+
+<p>《自顶向下方法》配套的ping实验采用python2，我参考了网友写好的<a class="link"   target="_blank" rel="noopener" href="http://moranzcw.com/Computer-Networking-A-Top-Down-Approach-NOTES/SocketProgrammingAssignment/%E4%BD%9C%E4%B8%9A5-ICMPping%E7%A8%8B%E5%BA%8F/%E4%BD%9C%E4%B8%9A5-ICMPping%E7%A8%8B%E5%BA%8F-%E8%A7%A3%E7%AD%94.html" >版本<i class="fas fa-external-link-alt"></i></a>，修改了一下，能在自己的wsl下通过python3解释器并运行。ping客户程序的实现需要通过一个SOCK_RAW套接字，它和SOCK_STREAM、SOCT_DGRAM类似，也是一种套接字类型。但SOCK_RAW是工作在ip层的，即这个套接字直接读写ip数据报的有效载荷。因此，我们通过它来读写ICMP报文的头部和数据。一个简单的ping客户程序的实现是这样——向目的ip地址（如果是域名就要先执行dns请求）发送一个类型为8、编码为0的echo request请求；id设置为客户的进程id，ping服务器在响应时带上这个id，客户就能确定响应报文是发送给自己的，从而解析应答ICMP报文；序号在这里不是特别关键。数据部分可以直接写入ping报文的发送时间，服务器会在应答报文中原样写入这个发送时间。之后客户监听并读取应答报文，读取pong报文载荷中的ping报文发送时间并计算延迟。客户可以为监听行为设置一个超时时间（此处为1秒），超过时间还没有收到回答的可以认为发生了数据包的丢失。</p>
+<p>我对python并不熟悉，这里只是能看明白ping的实现过程，代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br></pre></td><td class="code"><pre><span class="line">import socket</span><br><span class="line">import os </span><br><span class="line">import sys </span><br><span class="line">import struct </span><br><span class="line">import time </span><br><span class="line">import select </span><br><span class="line">import binascii</span><br><span class="line"></span><br><span class="line">ICMP_ECHO_REQUEST &#x3D; 8</span><br><span class="line"></span><br><span class="line">def checksum(str): </span><br><span class="line">    csum &#x3D; 0</span><br><span class="line">    countTo &#x3D; (len(str) &#x2F; 2) * 2</span><br><span class="line">    count &#x3D; 0</span><br><span class="line">    while count &lt; countTo:</span><br><span class="line">        thisVal &#x3D; str[count+1] * 256 + str[count] # 在python3中已经是整数了，不需要ord </span><br><span class="line">        csum &#x3D; csum + thisVal</span><br><span class="line">        csum &#x3D; csum &amp; 0xffffffff</span><br><span class="line">        count &#x3D; count + 2</span><br><span class="line"></span><br><span class="line">    if countTo &lt; len(str):</span><br><span class="line">        csum &#x3D; csum + ord(str[len(str) - 1]) </span><br><span class="line">        csum &#x3D; csum &amp; 0xffffffff</span><br><span class="line"></span><br><span class="line">    csum &#x3D; (csum &gt;&gt; 16) + (csum &amp; 0xffff) </span><br><span class="line">    csum &#x3D; csum + (csum &gt;&gt; 16)</span><br><span class="line">    answer &#x3D; ~csum</span><br><span class="line">    answer &#x3D; answer &amp; 0xffff</span><br><span class="line">    answer &#x3D; answer &gt;&gt; 8 | (answer &lt;&lt; 8 &amp; 0xff00) </span><br><span class="line">    return answer</span><br><span class="line"></span><br><span class="line">def receiveOnePing(mySocket, ID, timeout, destAddr): </span><br><span class="line">    timeLeft &#x3D; timeout  # timeout默认传入1</span><br><span class="line"></span><br><span class="line">    while 1:</span><br><span class="line">        startedSelect &#x3D; time.time()</span><br><span class="line">        whatReady &#x3D; select.select([mySocket], [], [], timeLeft) # 监听socket</span><br><span class="line">        howLongInSelect &#x3D; (time.time() - startedSelect)         # 监听了多少时间</span><br><span class="line"></span><br><span class="line">        if whatReady[0] &#x3D;&#x3D; []: # Timeout 这是由于select超时而返回，即没有收到任何回答</span><br><span class="line">            return &quot;Request timed out.&quot;</span><br><span class="line">        # 若没有监听超时，读出回答中的数据，包括数据报、发送回答的主机地址</span><br><span class="line">        timeReceived &#x3D; time.time()</span><br><span class="line">        recPacket, addr &#x3D; mySocket.recvfrom(1024)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        #Fill in start</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        #Fetch the ICMP header from the IP packet</span><br><span class="line">        header &#x3D; recPacket[20: 28] # ip数据报的报头为20个字节（不包括选项的话）</span><br><span class="line">        icmp_type, code, checksum, packet_id, seq &#x3D; struct.unpack(&quot;bbHHh&quot;, header) # b H h是从C类型到python类型的数据转换方式</span><br><span class="line">        if (icmp_type &#x3D;&#x3D; 0 and packet_id &#x3D;&#x3D; ID):   # （进程）ID用来确认回答的是哪一个报文</span><br><span class="line">            time_sent &#x3D; struct.unpack(&quot;d&quot;, recPacket[28: 28 + struct.calcsize(&quot;d&quot;)]) # icmp报头占8个字节，这之后是icmp数据，为ping报文发送时的时间</span><br><span class="line">            # print(time_sent)</span><br><span class="line">            delay &#x3D; timeReceived - time_sent[0]</span><br><span class="line">            return delay # 返回从发送ping报文到接受pong报文经历的时间（延迟）</span><br><span class="line">        #Fill in end</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        # timeLeft &#x3D; timeLeft - howLongInSelect </span><br><span class="line">        # if timeLeft &lt;&#x3D; 0:</span><br><span class="line">        #     return &quot;Request timed out.&quot;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def sendOnePing(mySocket, destAddr, ID):</span><br><span class="line">    # Header is type (8), code (8), checksum (16), id (16), sequence (16)</span><br><span class="line"></span><br><span class="line">    myChecksum &#x3D; 0</span><br><span class="line">    # Make a dummy header with a 0 checksum.</span><br><span class="line">    # struct -- Interpret strings as packed binary data</span><br><span class="line">    header &#x3D; struct.pack(&quot;bbHHh&quot;, ICMP_ECHO_REQUEST, 0, myChecksum, ID, 1)  # 构造icmp报文的头部，pack的作用是将数据类型转换成字节流</span><br><span class="line">    data &#x3D; struct.pack(&quot;d&quot;, time.time())</span><br><span class="line">    # Calculate the checksum on the data and the dummy header. </span><br><span class="line">    myChecksum &#x3D; checksum(header + data)    # 计算校验和会用到头部与数据</span><br><span class="line"></span><br><span class="line">    # Get the right checksum, and put in the header </span><br><span class="line">    if sys.platform &#x3D;&#x3D; &#39;darwin&#39;:    # 如果系统是 MAC OS X</span><br><span class="line">        myChecksum &#x3D; socket.htons(myChecksum) &amp; 0xffff</span><br><span class="line">    #Convert 16-bit integers from host to network byte order. </span><br><span class="line">    else:</span><br><span class="line">        myChecksum &#x3D; socket.htons(myChecksum)   # 将数据从主机序转换成网络序</span><br><span class="line"></span><br><span class="line">    header &#x3D; struct.pack(&quot;bbHHh&quot;, ICMP_ECHO_REQUEST, 0, myChecksum, ID, 1)  # 插入计算得到的检验和</span><br><span class="line">    packet &#x3D; header + data</span><br><span class="line"></span><br><span class="line">    mySocket.sendto(packet, (destAddr, 1)) # AF_INET address must be tuple, not str </span><br><span class="line">    #Both LISTS and TUPLES consist of a number of objects</span><br><span class="line">    #which can be referenced by their position number within the object</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def doOnePing(destAddr, timeout):</span><br><span class="line">    icmp &#x3D; socket.getprotobyname(&quot;icmp&quot;)</span><br><span class="line"></span><br><span class="line">    #SOCK_RAW is a powerful socket type. For more details see: http:&#x2F;&#x2F;sock-raw.org&#x2F;papers&#x2F;sock_raw</span><br><span class="line">    #Fill in start</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    #Create Socket here</span><br><span class="line">    # SOCK_RAW是一种专门工作在网络层的套接字，注意还要指明SOCK_RAW用于icmp协议</span><br><span class="line">    mySocket &#x3D; socket.socket(socket.AF_INET, socket.SOCK_RAW, icmp)  </span><br><span class="line"></span><br><span class="line">    #Fill in end</span><br><span class="line">    myID &#x3D; os.getpid() &amp; 0xFFFF  #Return the current process i </span><br><span class="line">    sendOnePing(mySocket, destAddr, myID)</span><br><span class="line">    delay &#x3D; receiveOnePing(mySocket, myID, timeout, destAddr)   # receiveOnePing返回的是一个元组</span><br><span class="line">    mySocket.close() </span><br><span class="line">    return delay</span><br><span class="line"></span><br><span class="line">def ping(host, timeout&#x3D;1):</span><br><span class="line">    #timeout&#x3D;1 means: If one second goes by without a reply from the server,</span><br><span class="line">    #the client assumes that either the client’s ping or the server’s pong is lost </span><br><span class="line">    dest &#x3D; socket.gethostbyname(host)</span><br><span class="line">    print(&quot;Pinging &quot; + dest + &quot; using Python:&quot; )</span><br><span class="line">    print(&quot;&quot;)</span><br><span class="line">    #Send ping requests to a server separated by approximately one second </span><br><span class="line">    while 1 :</span><br><span class="line">        delay &#x3D; doOnePing(dest, timeout) </span><br><span class="line">        print(delay)</span><br><span class="line">        time.sleep(1) # one second</span><br><span class="line">    return delay</span><br><span class="line"></span><br><span class="line">ping(&quot;www.baidu.com&quot;)</span><br></pre></td></tr></table></figure>
+        </div>
+
+        
+            <div class="post-copyright-info">
+                .article-copyright-info-container {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--second-background-color);
+  padding: 10px 6px;
+  font-size: 1rem;
+
+  &::after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    content: '';
+    width: 8px;
+    height: 100%;
+    background: var(--copyright-info-color);
+  }
+
+
+  ul {
+
+    margin-left: 10px;
+
+    li {
+      margin-bottom: 5px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      .license {
+        font-weight: bold;
+      }
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+            </div>
+        
+
+        
+            <div class="article-nav">
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2021/02/23/%E7%BA%BF%E7%A8%8B%E7%89%B9%E6%9C%89%E6%95%B0%E6%8D%AE%E7%9A%84%E4%B8%A4%E4%B8%AA%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">线程特有数据的两个应用场景</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex-center" >
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+            <div class="comment-container">
+                <div class="comments-container">
+    <div id="comment-anchor"></div>
+    
+        
+    <div class="valine-container">
+        <script src='//unpkg.com/valine/dist/Valine.min.js'></script>
+        <div id="vcomments"></div>
+        <script>
+            new Valine({
+                el: '#vcomments',
+                appId: 'NRVWXM6GFofYiCBRAB5JTG9e-gzGzoHsz',
+                appKey: 'yAHMgxXCqgSvTXoKicTCGk8P',
+                meta: 'nick,mail'.split(','),
+                avatar: 'wavatar',
+                enableQQ: true,
+                placeholder: '😜 尽情吐槽吧~',
+                lang: 'en'.toLowerCase()
+            });
+
+
+            // Valine 评论列表增加"博主"标识
+            const getValineDomTimer = setInterval(() => {
+                const vcards = document.querySelectorAll('#vcomments .vcards .vcard');
+                if (vcards.length > 0) {
+
+                    let author = 'Ray Lyu';
+                    if (author) {
+                        author = author.toLocaleLowerCase();
+                    }
+
+                    for (let vcard of vcards) {
+                        const vnick = vcard.querySelector('.vhead .vnick');
+                        if (vnick.innerHTML.toLocaleLowerCase() === author) {
+                            vcard.classList.add('author');
+                        }
+                    }
+                    clearInterval(getValineDomTimer);
+                } else {
+                    clearInterval(getValineDomTimer);
+                }
+            }, 2000);
+        </script>
+    </div>
+
+
+    
+</div>
+
+            </div>
+        
+    </div>
+</div>
+
+
+                    
+                </main>
+
+            </div>
+
+            <div class="page-main-content-bottom">
+                <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span> -
+            
+            2021 <i class="fas fa-heart icon-animate"></i> <a href="/">Ray Lyu</a>
+        </div>
+        
+            <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        Visitor Count <span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        Totalview <span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            Powered by <a target="_blank" href="https://hexo.io">Hexo</a> | Theme <a class="theme-version" target="_blank"></a>
+        </div>
+    </div>
+</footer>
+
+            </div>
+        </div>
+    </main>
+
+    <div class="sidebar-tools">
+        <div class="tools-container">
+    <ul class="tools-list">
+        
+            <li class="search popup-trigger">
+                <i class="fas fa-search"></i>
+            </li>
+        
+
+        
+            <li class="go-comment">
+                <i class="fas fa-comment"></i>
+            </li>
+        
+
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+    </ul>
+</div>
+
+    </div>
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        <li class="tools-item tool-scroll-to-top flex-center">
+            <i class="fas fa-arrow-up"></i>
+        </li>
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="tools-ul-1">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+
+    </ul>
+</div>
+
+    </div>
+
+    <!-- page aside -->
+    <aside class="page-aside">
+        
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        
+    </div>
+</div>
+        
+    </aside>
+
+    <!-- image viewer -->
+    <div class="image-viewer-container">
+    <div class="img-box">
+        <img src="">
+    </div>
+</div>
+
+
+</div>
+
+
+
+    <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-icon">
+            <i class="fas fa-search"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/local-search.js"></script>
+
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/left-side-toggle.js"></script>
+
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/code-copy.js"></script>
+    
+
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/toc.js"></script>
+    
+
+
+</body>
+</html>

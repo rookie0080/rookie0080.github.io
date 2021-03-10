@@ -201,25 +201,66 @@
 
         
             <div class="post-copyright-info">
-                <div class="article-copyright-info-container">
-    <ul>
-        <li>Post title：线程特有数据的两个应用场景</li>
-        <li>Post author：Ray Lyu</li>
-        <li>Create time：2021-02-23 17:10:55</li>
-        <li>
-            Post link：https://rookie0080.github.io/2021/02/23/线程特有数据的两个应用场景/
-        </li>
-        <li>
-            Copyright Notice：All articles in this blog are licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">BY-NC-SA</a> unless stating additionally.
-        </li>
-    </ul>
-</div>
+                .article-copyright-info-container {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--second-background-color);
+  padding: 10px 6px;
+  font-size: 1rem;
+
+  &::after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    content: '';
+    width: 8px;
+    height: 100%;
+    background: var(--copyright-info-color);
+  }
+
+
+  ul {
+
+    margin-left: 10px;
+
+    li {
+      margin-bottom: 5px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      .license {
+        font-weight: bold;
+      }
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
 
             </div>
         
 
         
             <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/2021/03/10/ping%E7%9A%84%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E7%8E%B0/"
+                        >
+                            <span class="left arrow-icon flex-center" >
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">ping的原理与实现</span>
+                                <span class="post-nav-item">Prev posts</span>
+                            </span>
+                        </a>
+                    </div>
                 
                 
                     <div class="article-next">
